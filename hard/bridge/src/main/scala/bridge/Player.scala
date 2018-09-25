@@ -18,14 +18,10 @@ object Player extends App {
     while(true) {
         val s = readInt // the motorbikes' speed
 
-        var bikes: List[Bike] = List(Bike(0, 1, true), Bike(0, 2, true))
-        for (i <- 0 until m) {
-            // x: x coordinate of the motorbike
-            // y: y coordinate of the motorbike
-            // a: indicates whether the motorbike is activated "1" or detroyed "0"
-            val Array(x, y, a) = for (i <- readLine split " ") yield i.toInt
-            bikes = Bike(x, y, a == 1) :: bikes
-        }
+        val bikes = for {
+            i <- 0 until m
+            Array(x, y, a) = for (i <- readLine split " ") yield i.toInt
+        } yield Bike(x, y, a == 1)
 
         implicit val ctx = Context(v, l0, l1, l2, l3)
 
@@ -38,7 +34,7 @@ object Player extends App {
         // To debug: Console.err.println("Debug messages...")
 
         // A single line containing one of 6 keywords: SPEED, SLOW, JUMP, WAIT, UP, DOWN.
-        val initialState = State(s, bikes, "INIT")
+        val initialState = State(s, bikes.toList, "INIT")
 
         val sim = simulate(List(List(initialState)))
         sim.reverse.map(_.cmd).filter(_ != "INIT").foreach(println(_))
